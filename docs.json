@@ -52,6 +52,49 @@
             ]
           },
           {
+            "group": "Webhooks",
+            "pages": [
+              {
+                "group": "Payout Webhook",
+                "pages": [
+                  "payout-webhook-examples"
+                ]
+              },
+              {
+                "group": "Gift Card Webhook",
+                "pages": [
+                  "gift-card-webhook-examples"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Misc",
+            "pages": [
+              "kyc-requirements-by-country"
+            ]
+          },
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "authentication",
+              "error-codes",
+              "api-structure"
+            ]
+          },
+          {
+            "group": "Collection",
+            "pages": []
+          },
+          {
+            "group": "Payout",
+            "pages": [
+              "payout-overview",
+              "payout-pricing"
+            ]
+          },
+          {
             "group": "Webhook",
             "pages": [
               {
@@ -343,6 +386,9 @@
             "openapi": "novacrust-open-api-v2.yaml"
           }
         ]
+      },
+      {
+        "tab": "Get Started"
       }
     ]
   },
