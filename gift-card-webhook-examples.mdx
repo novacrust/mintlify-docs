@@ -1,0 +1,94 @@
+---
+title: "Gift Card Webhook Examples"
+description: "These are the events Novacrust sends to a merchant's configured webhook URL for payout and gift card order status changes. Every event is delivered as an HTTP POST to that URL."
+---
+
+## Signing
+
+If the merchant has configured a webhook secret, each request carries:
+
+- `X-Novacrust-Signature` — HMAC-SHA256 of `${timestamp}.${JSON.stringify(payload)}`, using the merchant's webhook secret.
+- `X-Novacrust-Timestamp` — the timestamp used in the signature above.
+
+If no webhook secret is configured, requests are sent unsigned.
+
+---
+
+## Gift Cards
+
+Gift card webhooks use a **flat** envelope — no `data` wrapper, `event` sits alongside the other fields directly.
+
+### Purchase (business buying a gift card) — `GIFT_CARD_PURCHASE_SUCCESS` / `GIFT_CARD_PURCHASE_FAILED`
+
+```json
+{
+  "event": "GIFT_CARD_PURCHASE_SUCCESS",
+  "reference": "b1e2c3d4-5717-4562-b3fc-2c963f66afa6",
+  "product_name": "Amazon US $50",
+  "amount": 50,
+  "quantity": 1,
+  "total_amount": 52.5,
+  "currency": "usd",
+  "recipient_email": "user@example.com",
+  "status": "SUCCESS",
+  "timestamp": "2026-09-24T10:00:00.000Z"
+}
+```
+
+```json
+{
+  "event": "GIFT_CARD_PURCHASE_FAILED",
+  "reference": "b1e2c3d4-5717-4562-b3fc-2c963f66afa6",
+  "product_name": "Amazon US $50",
+  "status": "FAILED",
+  "timestamp": "2026-09-24T10:00:00.000Z"
+}
+```
+
+> **Note**: as delivered live today, `GIFT_CARD_PURCHASE_FAILED` carries a smaller field set than `GIFT_CARD_PURCHASE_SUCCESS` — it omits `amount`, `quantity`, `total_amount`, `currency`, and `recipient_email`. A manually re-triggered delivery of the same failed event currently sends the fuller field set instead. Integrators should treat those five fields as optional/absent on a failed purchase event until this is reconciled.
+
+### Sale (business selling a gift card to Novacrust) — `GIFT_CARD_SALE_SUCCESS` / `GIFT_CARD_SALE_FAILED`
+
+```json
+{
+  "event": "GIFT_CARD_SALE_SUCCESS",
+  "reference": "c2d3e4f5-5717-4562-b3fc-2c963f66afa6",
+  "payout_amount": 45000,
+  "fee_removed": 2500,
+  "currency": "ngn",
+  "status": "SUCCESS",
+  "timestamp": "2026-09-24T10:00:00.000Z",
+  "metadata": {}
+}
+```
+
+```json
+{
+  "event": "GIFT_CARD_SALE_FAILED",
+  "reference": "c2d3e4f5-5717-4562-b3fc-2c963f66afa6",
+  "status": "FAILED",
+  "reason": "Card already used",
+  "timestamp": "2026-09-24T10:00:00.000Z",
+  "metadata": {}
+}
+```
+
+`metadata` is a passthrough of the order's own metadata — its shape is not fixed and depends on the order/provider.
+
+### Field reference
+
+| Field | Type | Present on |
+| --- | --- | --- |
+| `reference` | string (uuid) | All gift card events |
+| `product_name` | string | Purchase only |
+| `amount` | number | Purchase success (see failed-event note above) |
+| `quantity` | number | Purchase success (see failed-event note above) |
+| `total_amount` | number | Purchase success (see failed-event note above) |
+| `currency` | string | Purchase success (see note); sale success |
+| `recipient_email` | string | Purchase success (see failed-event note above) |
+| `payout_amount` | number | Sale success only |
+| `fee_removed` | number | Sale success only |
+| `reason` | string | Sale failed only |
+| `metadata` | object | Sale events only (arbitrary shape) |
+| `status` | string | All |
+| `timestamp` | string (ISO 8601) | All |

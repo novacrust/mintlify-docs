@@ -1,0 +1,60 @@
+---
+title: "Webhook Verification"
+---
+
+## Verifying Webhook Signatures
+
+Every webhook Novacrust sends to your configured `webhookUrl` includes an `X-Novacrust-Signature` and `X-Novacrust-Timestamp` header, computed with the webhook secret shown in your Dashboard under **Settings → Webhooks**.
+
+The signature is an HMAC-SHA256 of `{timestamp}.{raw JSON body}`, keyed with your webhook secret, and sent as `sha256={hex digest}`. Always verify a delivery before trusting its payload, and use the raw request body exactly as received — re-serializing after JSON parsing can alter key ordering or whitespace and produce a signature mismatch.
+
+## Node.js
+
+```js# Webhook Verification
+
+## Verifying Webhook Signatures
+
+Every webhook Novacrust sends to your configured `webhookUrl` includes an `X-Novacrust-Signature` and `X-Novacrust-Timestamp` header, computed with the webhook secret shown in your Dashboard under **Settings → Webhooks**.
+
+The signature is an HMAC-SHA256 of `{timestamp}.{raw JSON body}`, keyed with your webhook secret, and sent as `sha256={hex digest}`. Always verify a delivery before trusting its payload, and use the raw request body exactly as received — re-serializing after JSON parsing can alter key ordering or whitespace and produce a signature mismatch.
+const crypto = require('crypto');
+
+function isValidNovacrustWebhook(rawBody, headers, webhookSecret) {
+  const timestamp = headers['x-novacrust-timestamp'];
+  const signatureHeader = headers['x-novacrust-signature']; // "sha256=..."
+
+  if (!timestamp || !signatureHeader) return false;
+
+  const expected = crypto
+    .createHmac('sha256', webhookSecret)
+    .update(`${timestamp}.${rawBody}`)
+    .digest('hex');
+
+  const provided = signatureHeader.replace('sha256=', '');
+
+  return crypto.timingSafeEqual(
+    Buffer.from(expected, 'hex'),
+    Buffer.from(provided, 'hex'),
+  );
+}
+```
+
+## Python
+
+```python
+import hmac
+import hashlib
+
+def is_valid_novacrust_webhook(raw_body: bytes, headers: dict, webhook_secret: str) -> bool:
+    timestamp = headers.get("x-novacrust-timestamp")
+    signature_header = headers.get("x-novacrust-signature", "")  # "sha256=..."
+
+    if not timestamp or not signature_header:
+        return False
+
+    signed_payload = f"{timestamp}.{raw_body.decode()}".encode()
+    expected = hmac.new(webhook_secret.encode(), signed_payload, hashlib.sha256).hexdigest()
+    provided = signature_header.replace("sha256=", "")
+
+    return hmac.compare_digest(expected, provided)
+```

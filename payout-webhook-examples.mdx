@@ -1,0 +1,92 @@
+---
+title: "Payout Webhook Examples"
+description: "These are the events Novacrust sends to a merchant's configured webhook URL for payout and gift card order status changes. Every event is delivered as an HTTP POST to that URL."
+---
+
+## Signing
+
+If the merchant has configured a webhook secret, each request carries:
+
+- `X-Novacrust-Signature` — HMAC-SHA256 of `${timestamp}.${JSON.stringify(payload)}`, using the merchant's webhook secret.
+- `X-Novacrust-Timestamp` — the timestamp used in the signature above.
+
+If no webhook secret is configured, requests are sent unsigned.
+
+---
+
+## Payouts
+
+Events: `PAYOUT_SUCCESS`, `PAYOUT_FAILED`. There is no "initiated" or "pending" payout webhook — only these two terminal states are ever sent.
+
+Envelope: `{ event, data: {...} }`.
+
+### `PAYOUT_SUCCESS` (fiat)
+
+```json
+{
+  "event": "PAYOUT_SUCCESS",
+  "data": {
+    "amount": 50000,
+    "currency": "ngn",
+    "status": "SUCCESS",
+    "transaction_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "description": "Payout to John Doe",
+    "sent_status": "SUCCESS",
+    "transaction_reference": "PYT-1234567890",
+    "transaction_type": "DEBIT",
+    "transaction_date": "2026-09-24T10:00:00.000Z",
+    "beneficiary": {
+      "uuid": "b1e2c3d4-5717-4562-b3fc-2c963f66afa6",
+      "name": "John Doe",
+      "countryCode": "NG",
+      "payoutMethodName": "Bank Transfer",
+      "created_at": "2026-09-01T10:00:00.000Z",
+      "updated_at": "2026-09-01T10:00:00.000Z"
+    }
+  }
+}
+```
+
+### `PAYOUT_FAILED` (fiat)
+
+Identical field set to `PAYOUT_SUCCESS` — only `status`, `sent_status`, and `event` change to `"FAILED"`.
+
+### Crypto payouts — extra fields on success only
+
+A crypto withdrawal `PAYOUT_SUCCESS` payload adds three fields not present on fiat payouts or on crypto `PAYOUT_FAILED`:
+
+```json
+{
+  "event": "PAYOUT_SUCCESS",
+  "data": {
+    "...": "all fields above, plus:",
+    "network_txid": "0xabc123...",
+    "network_fee": 0.0001,
+    "network": "trc20"
+  }
+}
+```
+
+> **Note**: this asymmetry (crypto success gets `network_txid`/`network_fee`/`network`, crypto failure does not) reflects current live behavior, not an intentional design choice documented elsewhere — flagging in case it should be made symmetric in a future change.
+
+### Field reference
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `amount` | number |  |
+| `transaction_reference` | string |  |
+| `transaction_type` | `"DEBIT"` \| `"CREDIT"` | Always `"DEBIT"` for payouts today. |
+| `transaction_date` | string (ISO 8601) |  |
+| `transaction_id` | string (uuid) | The payout's own id. |
+| `currency` | string | Lowercase ISO code, e.g. `"ngn"`. |
+| `status` | `"SUCCESS"` \| `"FAILED"` |  |
+| `description` | string |  |
+| `sent_status` | `"SUCCESS"` \| `"FAILED"` |  |
+| `beneficiary` | object | See shape above. |
+| `merchant_data` | object | **Reserved — not currently populated by any code path.** Do not build against this field yet. |
+| `fee` | number | **Reserved — not currently populated by any code path.** Do not build against this field yet. |
+| `network_txid` | string \| null | Crypto payout success only. |
+| `network_fee` | number | Crypto payout success only. |
+| `network` | string \| null | Crypto payout success only. |
+
+---

@@ -1,0 +1,27 @@
+---
+title: "Card debit success event"
+---
+
+```json
+{
+    "eventType": "CARD_DEBIT_SUCCESS",
+    "cardId": "card003",
+    "amount": 500,
+    "balance": 1000,
+    "currency": "USD",
+    "transaction_reference": "tx001-uuid",
+    "transaction_type": "DEBIT",
+    "transaction_date": "2025-03-05T12:00:00Z",
+    "timestamp": "6440664122",
+    "description": "Youtube Music 2828",
+    "merchant_data": {
+        "merchant": "AWS", 
+        "merchant_category_code": "34345 or N/A"
+    },
+    "foreign_transaction":{
+        "amount": 5,
+        "currency": "GBP",
+        "foreign_transaction_fee": 10
+    }
+}
+```

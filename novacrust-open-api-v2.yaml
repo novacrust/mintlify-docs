@@ -1,0 +1,4895 @@
+openapi: 3.0.0
+paths:
+  /api/v1/business/open/customer:
+    post:
+      description: "
+
+        \      Creates a new customer with optional KYC verification.
+
+        \     \ 
+
+        \      **KYC Validation Rules:**
+
+        \      - If run_kyc_check is true, the following fields are required:
+        address, postal_code, state, city, kyc_metadata
+
+        \      - If any of these fields (address, postal_code, state, city,
+        kyc_metadata) are provided, run_kyc_check must be set to true
+
+        \      - If run_kyc_check is false, none of the KYC fields should be
+        provided
+
+        \    "
+      operationId: createCustomer
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpenApiCreateCustomerDto"
+            examples:
+              withKyc:
+                summary: Create customer with KYC
+                description: Example with KYC verification enabled
+                value:
+                  first_name: John
+                  last_name: Doe
+                  email: john.doe@example.com
+                  phone_number: "+1234567890"
+                  country: USA
+                  customer_type: INDIVIDUAL
+                  run_kyc_check: true
+                  address: 123 Main St
+                  postal_code: "12345"
+                  state: California
+                  city: Los Angeles
+                  kyc_metadata:
+                    id_type: NIGERIAN_BVN_VERIFICATION
+                    bvn: "22222222222222"
+                    selfie_image: https://image.com
+              withoutKyc:
+                summary: Create customer without KYC
+                description: Example without KYC verification
+                value:
+                  first_name: Jane
+                  last_name: Smith
+                  email: jane.smith@example.com
+                  phone_number: "+1987654321"
+                  country: USA
+                  customerType: INDIVIDUAL
+                  run_kyc_check: false
+      responses:
+        "201":
+          description: Customer created successfully
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 400
+                  message:
+                    - Address is required when KYC check is enabled
+                    - run_kyc_check must be true when address, postal_code,
+                      state, city, or kyc_metadata are provided
+                  error: Bad Request
+      summary: Create Customer
+      tags: &a1
+        - Customer
+  /api/v1/business/open/customer/all:
+    get:
+      operationId: findAll
+      parameters:
+        - name: page
+          required: true
+          in: query
+          schema:
+            type: number
+        - name: limit
+          required: true
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+      summary: List Customer
+      tags: *a1
+  /api/v1/business/open/customer/{uuid}:
+    get:
+      operationId: findOne
+      parameters:
+        - name: uuid
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+      summary: Get Customer
+      tags: *a1
+    patch:
+      description: "
+
+        \      Updates an existing customer with optional KYC verification.
+
+        \     \ 
+
+        \      **KYC Validation Rules:**
+
+        \      - If run_kyc_check is true, the following fields are required:
+        address, postal_code, state, city, kyc_metadata
+
+        \      - If any of these fields (address, postal_code, state, city,
+        kyc_metadata) are provided, run_kyc_check must be set to true
+
+        \      - If run_kyc_check is false, none of the KYC fields should be
+        provided
+
+        \      - All fields are optional; only provide the fields you want to
+        update
+
+        \    "
+      operationId: update
+      parameters:
+        - name: uuid
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpenApiUpdateCustomerDto"
+            examples:
+              withKyc:
+                summary: Update customer with KYC
+                description: Example with KYC verification enabled
+                value:
+                  first_name: John
+                  last_name: Doe
+                  email: john.doe@example.com
+                  phone_number: "+1234567890"
+                  country: USA
+                  customer_type: INDIVIDUAL
+                  run_kyc_check: true
+                  address: 123 Main St
+                  postal_code: "12345"
+                  state: California
+                  city: Los Angeles
+                  kyc_metadata:
+                    id_type: NIGERIAN_BVN_VERIFICATION
+                    bvn: "22222222222222"
+                    selfie_image: https://image.com
+              withoutKyc:
+                summary: Update customer without KYC
+                description: Example without KYC verification - only update basic fields
+                value:
+                  first_name: Jane
+                  last_name: Smith
+                  email: jane.smith@example.com
+                  phone_number: "+1987654321"
+                  country: USA
+              partial:
+                summary: Partial update
+                description: Update only specific fields
+                value:
+                  email: newemail@example.com
+                  phone_number: "+1555555555"
+      responses:
+        "200":
+          description: Customer updated successfully
+        "400":
+          description: Validation error or invalid customer UUID
+          content:
+            application/json:
+              schema:
+                example:
+                  statusCode: 400
+                  message:
+                    - Invalid customer uuid
+                    - Address is required when KYC check is enabled
+                    - run_kyc_check must be true when address, postal_code,
+                      state, city, or kyc_metadata are provided
+                  error: Bad Request
+        "404":
+          description: Customer not found
+      summary: Update Customer
+      tags: *a1
+    delete:
+      operationId: remove
+      parameters:
+        - name: uuid
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      summary: Delete Customer
+      tags: *a1
+  /api/v1/business/open/payouts:
+    post:
+      operationId: create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpenApiInitiateBusinessPayoutDTO"
+      responses:
+        "201":
+          description: ""
+      summary: Initiate Payout
+      tags: &a2
+        - Payout
+  /api/v1/business/open/payouts/{reference}:
+    get:
+      operationId: findOne
+      parameters:
+        - name: reference
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      summary: Verify Payout
+      tags: *a2
+  /api/v1/business/open/payouts/list/all:
+    get:
+      description: Lists payouts, optionally filtered by currency.
+      operationId: listPayoutsByCurrency
+      parameters:
+        - name: currency
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: page
+          required: true
+          in: query
+          schema:
+            type: number
+        - name: limit
+          required: true
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+      summary: List Payouts
+      tags: *a2
+  /api/v1/business/open/beneficiary:
+    post:
+      operationId: create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpenApiCreateBeneficiaryDTO"
+      responses:
+        "201":
+          description: ""
+      summary: Create Beneficiary
+      tags: &a3
+        - Beneficiary
+  /api/v1/business/open/beneficiary/{uuid}:
+    get:
+      operationId: findOne
+      parameters:
+        - name: uuid
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      summary: Get Beneficiary
+      tags: *a3
+    delete:
+      operationId: deleteOne
+      parameters:
+        - name: uuid
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      summary: Delete Beneficiary
+      tags: *a3
+  /api/v1/business/open/beneficiary/list/all:
+    get:
+      operationId: listBeneficiariesByBusinessId
+      parameters:
+        - name: page
+          required: true
+          in: query
+          schema:
+            type: number
+        - name: limit
+          required: true
+          in: query
+          schema:
+            type: number
+        - name: currencyCode
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: countryCode
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      summary: List Beneficiaries
+      tags: *a3
+  /api/v1/business/open/payout_methods:
+    get:
+      description: Gets payout methods available for a given country code.
+      operationId: getPayoutMethodsByCountryCode
+      parameters:
+        - name: country_code
+          required: true
+          in: query
+          description: ISO 3166-1 alpha-2 country code
+          schema:
+            example: NG
+            type: string
+      responses:
+        "200":
+          description: ""
+      summary: List Payout Methods
+      tags: &a4
+        - Payout Methods
+  /api/v1/business/open/payout_methods/{uuid}:
+    get:
+      description: Gets a single payout method, including its metadata.
+      operationId: getPayoutMethodByUuid
+      parameters:
+        - name: uuid
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      summary: Get Payout Method
+      tags: *a4
+  /api/v1/business/open/payout_methods/{uuid}/fees/{amount}:
+    get:
+      operationId: getPayoutMethodFee
+      parameters:
+        - name: uuid
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: amount
+          required: true
+          in: path
+          schema:
+            type: number
+        - name: currency
+          required: false
+          in: query
+          description: Cryptocurrency code
+          schema:
+            example: usdt
+            type: string
+        - name: network
+          required: false
+          in: query
+          description: Cryptocurrency network
+          schema:
+            example: bep20
+            type: string
+      responses:
+        "200":
+          description: ""
+      summary: Payout Method Fees
+      tags: *a4
+  /api/v1/business/open/misc/exchange-rate:
+    get:
+      description: Gets the exchange rate between two currencies.
+      operationId: getExchangeRate
+      parameters:
+        - name: from_currency
+          required: true
+          in: query
+          schema:
+            enum:
+              - usd
+              - eur
+              - gbp
+            type: string
+        - name: to_currency
+          required: true
+          in: query
+          schema:
+            enum:
+              - ngn
+              - ghs
+              - kes
+              - zar
+              - tzs
+              - ugx
+              - xof
+              - rwf
+              - zmw
+              - xaf
+              - gmd
+              - lrd
+              - mwk
+              - etb
+              - egp
+              - sle
+            type: string
+        - name: amount
+          required: true
+          in: query
+          schema:
+            minimum: 1
+            type: number
+      responses:
+        "200":
+          description: Exchange rate retrieved successfully
+          content:
+            application/json:
+              example:
+                success: true
+                message: Exchange rate retrieved successfully
+                data:
+                  query:
+                    from: USD
+                    to: NGN
+                    amount: 1
+                  info:
+                    timestamp: 1768544337122
+                    date: 2026-01-16T06:18:57.122Z
+                    rate: 1440
+                  result: 1440
+      summary: Get Exchange Rate
+      tags:
+        - Miscellaneous
+  /api/v1/business/open/transactions/card:
+    get:
+      description: Gets card transaction details by reference.
+      operationId: getCardTransaction
+      parameters:
+        - name: reference
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transaction details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessCardTransactionResponse"
+      summary: Card Transaction Details
+      tags: &a5
+        - Transactions
+  /api/v1/business/open/transactions/wallet:
+    get:
+      description: Gets wallet transaction details by reference.
+      operationId: getWalletTransaction
+      parameters:
+        - name: reference
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transaction details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessWalletTransactionResponse"
+      summary: Wallet Transaction Details
+      tags: *a5
+  /api/v1/business/open/gift-card/countries:
+    get:
+      description: Gets the list of supported countries for gift cards.
+      operationId: getCountries
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetGiftCardCountriesResponseDTO"
+      security: &a6
+        - access-token: []
+      summary: Gift Card Countries
+      tags: &a7
+        - Buy Gift Card
+  /api/v1/business/open/gift-card/categories:
+    get:
+      description: Gets the list of supported categories for gift cards.
+      operationId: getCategories
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetGiftCardCategoriesResponseDTO"
+      security: *a6
+      summary: Gift Card Categories
+      tags: *a7
+  /api/v1/business/open/gift-card/products:
+    get:
+      description: Gets a paginated list of gift card products.
+      operationId: getProducts
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Page number
+          schema:
+            minimum: 1
+            default: 1
+            example: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Number of items per page
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 10
+            example: 10
+            type: number
+        - name: country_code
+          required: false
+          in: query
+          description: Filter by country code
+          schema:
+            example: US
+            type: string
+        - name: category
+          required: false
+          in: query
+          description: Filter by category
+          schema:
+            example: Entertainment
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetGiftCardProductsResponseDTO"
+      security: *a6
+      summary: Gift Card Products
+      tags: *a7
+  /api/v1/business/open/gift-card/purchase:
+    post:
+      operationId: purchaseGiftCard
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpenApiPurchaseGiftCardDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseGiftCardResponseDTO"
+      security: *a6
+      summary: Purchase Gift Card
+      tags: *a7
+  /api/v1/business/open/gift-card/orders:
+    get:
+      description: Gets a paginated list of gift card purchase orders.
+      operationId: getOrders
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Page number
+          schema:
+            minimum: 1
+            default: 1
+            example: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Number of items per page
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 10
+            example: 10
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetGiftCardOrdersResponseDTO"
+      security: *a6
+      summary: Gift Card Orders
+      tags: *a7
+  /api/v1/business/open/gift-card/orders/{uuid}:
+    get:
+      description: Gets a single gift card purchase order.
+      operationId: getOrder
+      parameters:
+        - name: uuid
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetGiftCardOrderResponseDTO"
+      security: *a6
+      summary: Gift Card Order
+      tags: *a7
+  /api/v1/business/open/gift-card-sell/categories:
+    get:
+      description: Gets gift card categories available for selling.
+      operationId: getSellCategories
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OpenApiSellCategoryResponseDto"
+      security: &a8
+        - access-token: []
+      summary: Sell Categories
+      tags: &a9
+        - Sell Gift Card
+  /api/v1/business/open/gift-card-sell/products:
+    get:
+      description: Gets gift card products available for selling.
+      operationId: getSellProducts
+      parameters:
+        - name: categoryId
+          required: true
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OpenApiSellProductResponseDto"
+      security: *a8
+      summary: Sell Products
+      tags: *a9
+  /api/v1/business/open/gift-card-sell/rates-and-fee:
+    get:
+      description: Gets the sell rate and fees for a gift card.
+      operationId: getSellRateAndFee
+      parameters:
+        - name: amount
+          required: true
+          in: query
+          schema:
+            type: number
+        - name: rate
+          required: true
+          in: query
+          schema:
+            type: number
+        - name: payout_currency
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenApiSellRateAndFeeResponseDto"
+      security: *a8
+      summary: Sell Rates Fees
+      tags: *a9
+  /api/v1/business/open/gift-card-sell/orders:
+    get:
+      description: Gets the business's gift card sell order history.
+      operationId: getOrders
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Page number
+          schema:
+            minimum: 1
+            default: 1
+            example: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Number of items per page
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 10
+            example: 10
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenApiSellOrdersResponseDto"
+      security: *a8
+      summary: Sell Orders
+      tags: *a9
+  /api/v1/business/open/gift-card-sell/orders/{uuid}:
+    get:
+      description: Gets a single gift card sell order by UUID.
+      operationId: getOrder
+      parameters:
+        - name: uuid
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenApiSellOrderResponseDto"
+      security: *a8
+      summary: Get Sell Order
+      tags: *a9
+  /api/v1/business/open/gift-card-sell/sell:
+    post:
+      operationId: sellGiftCard
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/OpenApiSellGiftCardDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenApiSellInitiatedResponseDto"
+      security: *a8
+      summary: Sell Gift Card
+      tags: *a9
+info:
+  title: Open-API
+  description: The http Integration API description
+  version: "1.0"
+  contact: {}
+tags:
+  - name: Customer
+    description: ""
+  - name: Payout Methods
+    description: ""
+  - name: Beneficiary
+    description: ""
+  - name: Payout
+    description: ""
+  - name: Transactions
+    description: ""
+  - name: Buy Gift Card
+    description: ""
+  - name: Sell Gift Card
+    description: ""
+  - name: Miscellaneous
+    description: ""
+servers:
+  - url: http://localhost:3050
+    description: Local environment
+  - url: https://api-staging.novacrust.com
+    description: Staging environment
+  - url: https://api-dev.novacrust.com
+    description: Develop environment
+components:
+  securitySchemes:
+    api-key:
+      type: apiKey
+      in: header
+      name: authorization
+  schemas:
+    OpenApiCreateCustomerDto:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        phone_number:
+          type: string
+          pattern: /^\+?[1-9]\d{1,14}$/
+          description: Phone number of the business
+        country:
+          type: string
+          example: USA
+        address:
+          type: string
+          example: 123 Main St
+          description: Street address. Required when run_kyc_check is true. If provided,
+            run_kyc_check must be true.
+        postal_code:
+          type: string
+          example: "12345"
+          description: Postal/ZIP code. Required when run_kyc_check is true. If provided,
+            run_kyc_check must be true.
+        customer_type:
+          enum:
+            - INDIVIDUAL
+            - BUSINESS
+          type: string
+        state:
+          type: string
+          example: California
+          description: State/Province. Required when run_kyc_check is true. If provided,
+            run_kyc_check must be true.
+        city:
+          type: string
+          example: Los Angeles
+          description: City name. Required when run_kyc_check is true. If provided,
+            run_kyc_check must be true.
+        kyc_metadata:
+          type: object
+          example:
+            id_type: NIGERIAN_BVN_VERIFICATION
+            bvn: "22222222222222"
+            selfie_image: https://image.com
+          description: KYC verification metadata. Required when run_kyc_check is true. If
+            provided, run_kyc_check must be true.
+        run_kyc_check:
+          type: boolean
+          example: true
+          description: "Whether to run KYC verification. Must be true if any of the
+            following fields are provided: address, postalCode, state, city,
+            kyc_metadata."
+      required:
+        - first_name
+        - last_name
+        - email
+        - phone_number
+        - country
+        - customer_type
+        - run_kyc_check
+    OpenApiUpdateCustomerDto:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        phone_number:
+          type: string
+          pattern: /^\+?[1-9]\d{1,14}$/
+          description: Phone number of the business
+        country:
+          type: string
+          example: USA
+        address:
+          type: string
+          example: 123 Main St
+          description: Street address. Required when run_kyc_check is true.
+        postal_code:
+          type: string
+          example: "12345"
+          description: Postal/ZIP code. Required when run_kyc_check is true.
+        customer_type:
+          enum:
+            - INDIVIDUAL
+            - BUSINESS
+          type: string
+        state:
+          type: string
+          example: California
+          description: State/Province. Required when run_kyc_check is true.
+        city:
+          type: string
+          example: Los Angeles
+          description: City name. Required when run_kyc_check is true.
+        kyc_metadata:
+          type: object
+          example:
+            id_type: NIGERIAN_BVN_VERIFICATION
+            bvn: "22222222222222"
+            selfie_image: https://image.com
+          description: KYC verification metadata. Required when run_kyc_check is true.
+        run_kyc_check:
+          type: boolean
+          example: true
+          description: Whether to run KYC verification.
+    OpenApiInitiateBusinessPayoutDTO:
+      type: object
+      properties:
+        currency:
+          enum:
+            - usd
+            - ngn
+            - ghs
+            - eur
+            - gbp
+            - kes
+            - zar
+            - ugx
+            - tzs
+            - xof
+            - rwf
+            - zmw
+            - xaf
+            - gmd
+            - lrd
+            - mwk
+            - etb
+            - egp
+            - sle
+            - usdt
+            - usdc
+            - btc
+            - eth
+            - sol
+            - trx
+            - local_currency
+          type: string
+          description: The currency
+          example: ngn
+        beneficiary_uuid:
+          type: string
+          description: The uuid of the customer's beneficiary
+          example: ""
+        payout_method_uuid:
+          type: string
+          description: The uuid of the payout method
+          example: ""
+        amount:
+          type: number
+          minimum: 0.01
+          description: The amount to payout
+          example: ""
+        description:
+          type: string
+          description: The description
+          example: owambe
+        reference:
+          type: string
+          description: Your reference
+      required:
+        - currency
+        - beneficiary_uuid
+        - payout_method_uuid
+        - amount
+        - description
+        - reference
+    OpenApiCreateBeneficiaryDTO:
+      type: object
+      properties:
+        currency:
+          enum:
+            - usd
+            - ngn
+            - ghs
+            - eur
+            - gbp
+            - kes
+            - zar
+            - ugx
+            - tzs
+            - xof
+            - rwf
+            - zmw
+            - xaf
+            - gmd
+            - lrd
+            - mwk
+            - etb
+            - egp
+            - sle
+            - usdt
+            - usdc
+            - btc
+            - eth
+            - sol
+            - trx
+            - local_currency
+          type: string
+          description: The currency
+          example: ngn
+        metadata:
+          type: object
+          description: The beneficiary details
+          example:
+            name: Joke Silva
+            account_number: "01000000010"
+            bank_code: "066"
+        payout_method_uuid:
+          type: string
+          description: The uuid of the Payout method
+      required:
+        - currency
+        - metadata
+        - payout_method_uuid
+    BusinessCardTransactionResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+        reference:
+          type: string
+        providerReference:
+          type: string
+        type:
+          enum:
+            - CREDIT
+            - DEBIT
+          type: string
+        serviceType:
+          enum:
+            - wallet_funding
+            - payout_withdrawal
+            - balance_update
+            - exchange
+            - card_funding
+            - card_withdrawal
+            - card_creation
+            - usd_account_creation
+            - platform_fee
+            - purchase
+            - monthly_card_maintenance
+            - fund_card
+            - refund
+            - gift_card_purchase
+            - gift_card_sale
+            - authorization_code
+            - business_collection
+          type: string
+        currency:
+          type: string
+        merchantCategoryCode:
+          type: string
+        amount:
+          type: number
+        platformFee:
+          type: number
+        cardProviderFee:
+          type: number
+        revenueMetadata:
+          type: object
+          nullable: true
+        balanceBefore:
+          type: number
+        balanceAfter:
+          type: number
+        description:
+          type: string
+        status:
+          enum:
+            - PENDING
+            - SUCCESS
+            - FAILED
+            - CLOSE
+            - MANUAL_REVIEW
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - uuid
+        - reference
+        - providerReference
+        - type
+        - serviceType
+        - currency
+        - merchantCategoryCode
+        - amount
+        - platformFee
+        - cardProviderFee
+        - revenueMetadata
+        - balanceBefore
+        - balanceAfter
+        - description
+        - status
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessUser:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+        password:
+          type: string
+        pin:
+          type: string
+        isPinSet:
+          type: boolean
+        isActive:
+          type: boolean
+        otp:
+          type: string
+        otpExpiresAt:
+          format: date-time
+          type: string
+        pinSetupCode:
+          type: string
+        pinSetupCodeExpiresAt:
+          format: date-time
+          type: string
+        isOtpVerified:
+          type: boolean
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+        businessLink:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessUserLink"
+      required:
+        - id
+        - uuid
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - password
+        - pin
+        - isPinSet
+        - isActive
+        - otp
+        - otpExpiresAt
+        - pinSetupCode
+        - pinSetupCodeExpiresAt
+        - isOtpVerified
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - businessLink
+    BusinessUserLink:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        business:
+          $ref: "#/components/schemas/Business"
+        user:
+          $ref: "#/components/schemas/BusinessUser"
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - MEMBER
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - uuid
+        - business
+        - user
+        - role
+        - createdAt
+        - updatedAt
+        - deletedAt
+    Kyc:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        business:
+          $ref: "#/components/schemas/Business"
+        documents:
+          type: object
+          nullable: true
+        legalName:
+          type: string
+        tradingName:
+          type: string
+        registrationNumber:
+          type: string
+        taxNumber:
+          type: string
+        description:
+          type: string
+        owners:
+          type: object
+        status:
+          type: string
+        reason:
+          type: string
+        kycStatus:
+          type: string
+          enum:
+            - Not Submitted
+            - Pending
+            - Approved
+            - Rejected
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - uuid
+        - business
+        - documents
+        - legalName
+        - tradingName
+        - registrationNumber
+        - taxNumber
+        - description
+        - owners
+        - status
+        - reason
+        - kycStatus
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessPayoutMethodMetadata:
+      type: object
+      properties:
+        payoutMethod:
+          $ref: "#/components/schemas/BusinessPayoutMethod"
+        countryCode:
+          type: string
+        currency:
+          $ref: "#/components/schemas/Currency"
+        fieldOrder:
+          type: number
+        fieldName:
+          type: string
+        label:
+          type: string
+        fieldType:
+          type: string
+          enum:
+            - text
+            - number
+            - dropdown
+        isRequired:
+          type: boolean
+        options:
+          type: object
+          nullable: true
+        options_when:
+          type: object
+          nullable: true
+        helpText:
+          type: string
+        is_conditional:
+          type: boolean
+        conditions:
+          type: object
+          nullable: true
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - payoutMethod
+        - countryCode
+        - currency
+        - fieldOrder
+        - fieldName
+        - label
+        - fieldType
+        - isRequired
+        - options
+        - options_when
+        - helpText
+        - is_conditional
+        - conditions
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessPayoutsProvider:
+      type: object
+      properties:
+        name:
+          type: string
+        metadata:
+          type: object
+        supportsBeneficiary:
+          type: boolean
+        businessPayouts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessPayout"
+        businessPayoutMethodProviders:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessPayoutMethodProvider"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - name
+        - metadata
+        - supportsBeneficiary
+        - businessPayouts
+        - businessPayoutMethodProviders
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessPayoutMethodProvider:
+      type: object
+      properties:
+        payoutMethodId:
+          type: string
+        paymentMethodType:
+          type: string
+          nullable: true
+        countryCode:
+          type: string
+        country:
+          type: string
+        currencyCode:
+          type: string
+        priority:
+          type: number
+        isActive:
+          type: boolean
+        fieldMappings:
+          type: object
+        payoutFeeType:
+          type: object
+        payoutFeeValue:
+          type: number
+        payoutFeeCap:
+          type: number
+        platformFeeValue:
+          type: number
+        minPayoutPlatformFee:
+          type: number
+          nullable: true
+        minPayoutValue:
+          type: number
+        maxPayoutValue:
+          type: number
+        businessPayoutMethod:
+          $ref: "#/components/schemas/BusinessPayoutMethod"
+        providerId:
+          type: string
+        businessPayoutsProvider:
+          $ref: "#/components/schemas/BusinessPayoutsProvider"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - payoutMethodId
+        - paymentMethodType
+        - countryCode
+        - country
+        - currencyCode
+        - priority
+        - isActive
+        - fieldMappings
+        - payoutFeeType
+        - payoutFeeValue
+        - payoutFeeCap
+        - platformFeeValue
+        - minPayoutPlatformFee
+        - minPayoutValue
+        - maxPayoutValue
+        - businessPayoutMethod
+        - providerId
+        - businessPayoutsProvider
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessPayoutMethod:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        countryCode:
+          type: string
+        businessPayoutMethodMetadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessPayoutMethodMetadata"
+        beneficiaries:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessBeneficiary"
+        businessPayoutMethodProviders:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessPayoutMethodProvider"
+        payouts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessPayout"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - name
+        - description
+        - category
+        - countryCode
+        - businessPayoutMethodMetadata
+        - beneficiaries
+        - businessPayoutMethodProviders
+        - payouts
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessBeneficiary:
+      type: object
+      properties:
+        name:
+          type: string
+        payoutMethod:
+          $ref: "#/components/schemas/BusinessPayoutMethod"
+        countryCode:
+          type: string
+        currencyCode:
+          type: string
+        metadata:
+          type: object
+        business:
+          $ref: "#/components/schemas/Business"
+        payouts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessPayout"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - name
+        - payoutMethod
+        - countryCode
+        - currencyCode
+        - metadata
+        - business
+        - payouts
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessPayout:
+      type: object
+      properties:
+        beneficiary:
+          $ref: "#/components/schemas/BusinessBeneficiary"
+        providerReference:
+          type: string
+        transferReference:
+          type: string
+        payoutMethod:
+          $ref: "#/components/schemas/BusinessPayoutMethod"
+        amount:
+          type: number
+        description:
+          type: string
+        business:
+          $ref: "#/components/schemas/Business"
+        currency:
+          $ref: "#/components/schemas/Currency"
+        businessPayoutsProvider:
+          $ref: "#/components/schemas/BusinessPayoutsProvider"
+        providerFee:
+          type: number
+        networkFee:
+          type: number
+        platformFee:
+          type: number
+        totalAmount:
+          type: number
+        revenueMetadata:
+          type: object
+          nullable: true
+        status:
+          type: string
+          enum:
+            - PENDING
+            - PROCESSING
+            - SUCCESS
+            - FAILED
+        metadata:
+          type: object
+          nullable: true
+        txHash:
+          type: string
+          nullable: true
+        initiatedByBusinessUser:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/BusinessUser"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - beneficiary
+        - providerReference
+        - transferReference
+        - payoutMethod
+        - amount
+        - description
+        - business
+        - currency
+        - businessPayoutsProvider
+        - providerFee
+        - networkFee
+        - platformFee
+        - totalAmount
+        - revenueMetadata
+        - status
+        - metadata
+        - txHash
+        - initiatedByBusinessUser
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessCardTransaction:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        card:
+          $ref: "#/components/schemas/BusinessCard"
+        reference:
+          type: string
+        providerReference:
+          type: string
+        type:
+          type: string
+          enum:
+            - CREDIT
+            - DEBIT
+        serviceType:
+          type: string
+          enum:
+            - wallet_funding
+            - payout_withdrawal
+            - balance_update
+            - exchange
+            - card_funding
+            - card_withdrawal
+            - card_creation
+            - usd_account_creation
+            - platform_fee
+            - purchase
+            - monthly_card_maintenance
+            - fund_card
+            - refund
+            - gift_card_purchase
+            - gift_card_sale
+            - authorization_code
+            - business_collection
+        currency:
+          type: string
+        merchantCategoryCode:
+          type: string
+        amount:
+          type: number
+        platformFee:
+          type: number
+        cardProviderFee:
+          type: number
+        revenueMetadata:
+          type: object
+          nullable: true
+        balanceBefore:
+          type: number
+        balanceAfter:
+          type: number
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+            - PENDING
+            - SUCCESS
+            - FAILED
+            - CLOSE
+            - MANUAL_REVIEW
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - uuid
+        - card
+        - reference
+        - providerReference
+        - type
+        - serviceType
+        - currency
+        - merchantCategoryCode
+        - amount
+        - platformFee
+        - cardProviderFee
+        - revenueMetadata
+        - balanceBefore
+        - balanceAfter
+        - description
+        - status
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessCard:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        holder:
+          $ref: "#/components/schemas/BusinessCardHolder"
+        cardType:
+          type: string
+          enum:
+            - VIRTUAL
+            - PHYSICAL
+        brand:
+          type: string
+        displayName:
+          type: string
+        balance:
+          type: number
+        maskedPan:
+          type: string
+        lastFourDigits:
+          type: string
+        expirationDate:
+          type: string
+        billingAddress:
+          type: object
+        provider:
+          type: string
+          enum:
+            - bd
+            - sd
+            - brails
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - BLOCKED
+            - EXPIRED
+            - FROZEN
+        cardProviderId:
+          type: string
+        addressLine1:
+          type: string
+        addressLine2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCardTransaction"
+      required:
+        - id
+        - uuid
+        - holder
+        - cardType
+        - brand
+        - displayName
+        - balance
+        - maskedPan
+        - lastFourDigits
+        - expirationDate
+        - billingAddress
+        - provider
+        - status
+        - cardProviderId
+        - addressLine1
+        - addressLine2
+        - city
+        - state
+        - postalCode
+        - country
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - transactions
+    BusinessCardProvider:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        providerCardCreationFee:
+          type: number
+        name:
+          type: string
+        providerCardTransactionMinFee:
+          type: number
+        providerCardTransactionMaxFee:
+          type: number
+        providerCardTransactionFeePercentage:
+          type: number
+        providerCardMaintenanceFee:
+          type: number
+        novacrustCardTransactionMinFee:
+          type: number
+        novacrustCardTransactionMaxFee:
+          type: number
+        novacrustCardTransactionFeePercentage:
+          type: number
+        novacrustCardMaintenanceFee:
+          type: number
+        novacrustCardCreationFee:
+          type: number
+        providerCardFundingMinAmount:
+          type: number
+        supportedBrands:
+          type: array
+          items:
+            type: string
+        priority:
+          type: number
+        created:
+          format: date-time
+          type: string
+        updated:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - uuid
+        - providerCardCreationFee
+        - name
+        - providerCardTransactionMinFee
+        - providerCardTransactionMaxFee
+        - providerCardTransactionFeePercentage
+        - providerCardMaintenanceFee
+        - novacrustCardTransactionMinFee
+        - novacrustCardTransactionMaxFee
+        - novacrustCardTransactionFeePercentage
+        - novacrustCardMaintenanceFee
+        - novacrustCardCreationFee
+        - providerCardFundingMinAmount
+        - supportedBrands
+        - priority
+        - created
+        - updated
+    BusinessCardHolder:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        customer:
+          $ref: "#/components/schemas/Customer"
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCard"
+        cardProviderCardHolderID:
+          type: string
+        provider:
+          $ref: "#/components/schemas/BusinessCardProvider"
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - uuid
+        - customer
+        - cards
+        - cardProviderCardHolderID
+        - provider
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessCryptoTransaction:
+      type: object
+      properties:
+        cryptoWallet:
+          $ref: "#/components/schemas/BusinessCryptoWallet"
+        cryptoNetwork:
+          $ref: "#/components/schemas/BusinessCryptoNetwork"
+        providerReference:
+          type: string
+          nullable: true
+        currency:
+          type: string
+        totalAmount:
+          type: string
+        fee:
+          type: string
+        amount:
+          type: string
+        fiatWalletId:
+          type: number
+          nullable: true
+        status:
+          type: string
+          enum:
+            - pending
+            - confirmed
+            - failed
+        txHash:
+          type: string
+          nullable: true
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - cryptoWallet
+        - cryptoNetwork
+        - providerReference
+        - currency
+        - totalAmount
+        - fee
+        - amount
+        - fiatWalletId
+        - status
+        - txHash
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessCryptoWallet:
+      type: object
+      properties:
+        business:
+          $ref: "#/components/schemas/Business"
+        cryptoProvider:
+          $ref: "#/components/schemas/BusinessCryptoProvider"
+        cryptoNetwork:
+          $ref: "#/components/schemas/BusinessCryptoNetwork"
+        user_id_from_provider:
+          type: string
+        wallet_id_from_provider:
+          type: string
+        currency:
+          type: string
+        address:
+          type: string
+        status:
+          type: string
+          enum:
+            - active
+            - disabled
+        cryptoTransactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCryptoTransaction"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - business
+        - cryptoProvider
+        - cryptoNetwork
+        - user_id_from_provider
+        - wallet_id_from_provider
+        - currency
+        - address
+        - status
+        - cryptoTransactions
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessCryptoNetwork:
+      type: object
+      properties:
+        name:
+          type: string
+        symbol:
+          type: string
+        currency:
+          type: string
+        cryptoProvider:
+          $ref: "#/components/schemas/BusinessCryptoProvider"
+        cryptoWallets:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCryptoWallet"
+        cryptoTransactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCryptoTransaction"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - name
+        - symbol
+        - currency
+        - cryptoProvider
+        - cryptoWallets
+        - cryptoTransactions
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessCryptoProvider:
+      type: object
+      properties:
+        name:
+          type: string
+        walletCreationFee:
+          type: number
+        inflowFeeType:
+          type: string
+          enum:
+            - flat
+            - percentage
+        inflowFeeValue:
+          type: number
+        inflowFeeCap:
+          type: number
+          nullable: true
+        platformFeeValue:
+          type: number
+        cryptoNetworks:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCryptoNetwork"
+        cryptoWallets:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCryptoWallet"
+        crypto_accounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCustomerCryptoAccount"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - name
+        - walletCreationFee
+        - inflowFeeType
+        - inflowFeeValue
+        - inflowFeeCap
+        - platformFeeValue
+        - cryptoNetworks
+        - cryptoWallets
+        - crypto_accounts
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessCustomerCryptoTransaction:
+      type: object
+      properties:
+        customer_crypto_wallet:
+          $ref: "#/components/schemas/BusinessCustomerCryptoWallet"
+        cryptoNetwork:
+          $ref: "#/components/schemas/BusinessCryptoNetwork"
+        providerReference:
+          type: string
+          nullable: true
+        currency:
+          type: string
+        totalAmount:
+          type: string
+        fee:
+          type: string
+        amount:
+          type: string
+        fiatWalletId:
+          type: number
+          nullable: true
+        status:
+          type: string
+          enum:
+            - pending
+            - confirmed
+            - failed
+        txid:
+          type: string
+        transaction_reference:
+          type: string
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - customer_crypto_wallet
+        - cryptoNetwork
+        - providerReference
+        - currency
+        - totalAmount
+        - fee
+        - amount
+        - fiatWalletId
+        - status
+        - txid
+        - transaction_reference
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessCustomerCryptoWallet:
+      type: object
+      properties:
+        provider_wallet_id:
+          type: string
+        address:
+          type: string
+        currency:
+          type: string
+        status:
+          type: string
+          enum:
+            - active
+            - disabled
+        customer_crypto_account:
+          $ref: "#/components/schemas/BusinessCustomerCryptoAccount"
+        crypto_transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCustomerCryptoTransaction"
+        crypto_network_id:
+          type: string
+        crypto_network:
+          $ref: "#/components/schemas/BusinessCryptoNetwork"
+        crypto_provider_id:
+          type: string
+        crypto_provider:
+          $ref: "#/components/schemas/BusinessCryptoProvider"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - provider_wallet_id
+        - address
+        - currency
+        - status
+        - customer_crypto_account
+        - crypto_transactions
+        - crypto_network_id
+        - crypto_network
+        - crypto_provider_id
+        - crypto_provider
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessCustomerCryptoAccount:
+      type: object
+      properties:
+        customer_id:
+          type: number
+        provider_crypto_account_id:
+          type: string
+        crypto_provider_id:
+          type: string
+        crypto_provider:
+          $ref: "#/components/schemas/BusinessCryptoProvider"
+        customer:
+          $ref: "#/components/schemas/Customer"
+        business:
+          $ref: "#/components/schemas/Business"
+        customer_crypto_wallets:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCustomerCryptoWallet"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - customer_id
+        - provider_crypto_account_id
+        - crypto_provider_id
+        - crypto_provider
+        - customer
+        - business
+        - customer_crypto_wallets
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    Customer:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+        country:
+          type: string
+        address:
+          type: string
+        postalCode:
+          type: string
+        state:
+          type: string
+        city:
+          type: string
+        customerType:
+          type: string
+          enum:
+            - INDIVIDUAL
+            - BUSINESS
+        otp:
+          type: string
+        otpExpiresAt:
+          format: date-time
+          type: string
+        kyc_metadata:
+          type: object
+        kyc_status:
+          type: string
+          enum:
+            - pending
+            - approved
+            - declined
+        kycProviderVerificationReference:
+          type: string
+          nullable: true
+        kycProviderName:
+          type: string
+          nullable: true
+        kycProviderRawResponse:
+          type: object
+          nullable: true
+        kycProviderVerificationStatus:
+          type: string
+          nullable: true
+        kycProviderWasCharged:
+          type: boolean
+          nullable: true
+        business:
+          $ref: "#/components/schemas/Business"
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+        cardHolders:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCardHolder"
+        customerVirtualAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCustomerVirtualAccount"
+        cryptoAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCustomerCryptoAccount"
+      required:
+        - id
+        - uuid
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - country
+        - address
+        - postalCode
+        - state
+        - city
+        - customerType
+        - otp
+        - otpExpiresAt
+        - kyc_metadata
+        - kyc_status
+        - kycProviderVerificationReference
+        - kycProviderName
+        - kycProviderRawResponse
+        - kycProviderVerificationStatus
+        - kycProviderWasCharged
+        - business
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - cardHolders
+        - customerVirtualAccounts
+        - cryptoAccounts
+    BusinessCustomerVirtualAccountProvider:
+      type: object
+      properties:
+        name:
+          type: string
+        currencyCode:
+          type: string
+        metadata:
+          type: object
+        accountCreationFee:
+          type: number
+        inflowFeeType:
+          type: string
+          enum:
+            - flat
+            - percentage
+        inflowFeeValue:
+          type: number
+        inflowFeeCap:
+          type: number
+          nullable: true
+        failed_request_fee:
+          type: number
+          nullable: true
+        platformFeeValue:
+          type: number
+        customerVirtualAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCustomerVirtualAccount"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - name
+        - currencyCode
+        - metadata
+        - accountCreationFee
+        - inflowFeeType
+        - inflowFeeValue
+        - inflowFeeCap
+        - failed_request_fee
+        - platformFeeValue
+        - customerVirtualAccounts
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessCustomerVirtualAccountDetails:
+      type: object
+      properties:
+        virtualAccount:
+          $ref: "#/components/schemas/BusinessCustomerVirtualAccount"
+        accountMetadata:
+          type: object
+        validated:
+          type: boolean
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - virtualAccount
+        - accountMetadata
+        - validated
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessCustomerVirtualAccount:
+      type: object
+      properties:
+        customer:
+          $ref: "#/components/schemas/Customer"
+        business:
+          $ref: "#/components/schemas/Business"
+        currency:
+          $ref: "#/components/schemas/Currency"
+        businessCustomerVirtualAccountProvider:
+          $ref: "#/components/schemas/BusinessCustomerVirtualAccountProvider"
+        status:
+          type: string
+          enum:
+            - requested
+            - pending
+            - active
+            - inactive
+            - failed
+            - freezing
+        account_id_from_provider:
+          type: string
+        activation_metadata:
+          type: object
+          nullable: true
+        businessCustomerVirtualAccountDetails:
+          $ref: "#/components/schemas/BusinessCustomerVirtualAccountDetails"
+        tos_status:
+          type: boolean
+        kyc_status:
+          type: boolean
+        rejection_reason:
+          type: string
+          nullable: true
+        kyc_rejection_reasons:
+          type: object
+          properties:
+            reason:
+              type: string
+            developerReason:
+              type: string
+          required:
+            - reason
+            - developerReason
+        pending_issues:
+          nullable: true
+          type: array
+          items:
+            type: string
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - customer
+        - business
+        - currency
+        - businessCustomerVirtualAccountProvider
+        - status
+        - account_id_from_provider
+        - activation_metadata
+        - businessCustomerVirtualAccountDetails
+        - tos_status
+        - kyc_status
+        - rejection_reason
+        - kyc_rejection_reasons
+        - pending_issues
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    PayoutMethodMetadata:
+      type: object
+      properties:
+        payoutMethod:
+          $ref: "#/components/schemas/PayoutMethod"
+        countryCode:
+          type: string
+        currency:
+          $ref: "#/components/schemas/Currency"
+        fieldOrder:
+          type: number
+        fieldName:
+          type: string
+        label:
+          type: string
+        fieldType:
+          type: string
+          enum:
+            - text
+            - number
+            - dropdown
+        isRequired:
+          type: boolean
+        options:
+          type: object
+          nullable: true
+        options_when:
+          type: object
+          nullable: true
+        helpText:
+          type: string
+        is_conditional:
+          type: boolean
+        conditions:
+          type: object
+          nullable: true
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - payoutMethod
+        - countryCode
+        - currency
+        - fieldOrder
+        - fieldName
+        - label
+        - fieldType
+        - isRequired
+        - options
+        - options_when
+        - helpText
+        - is_conditional
+        - conditions
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    VirtualAccountProvider:
+      type: object
+      properties:
+        name:
+          type: string
+        currencyCode:
+          type: string
+        metadata:
+          type: object
+        accountCreationFee:
+          type: number
+        minimumFundingFee:
+          type: number
+        inflowFeeType:
+          type: string
+          enum:
+            - flat
+            - percentage
+        inflowFeeValue:
+          type: number
+        inflowFeeCap:
+          type: number
+          nullable: true
+        platformFeeValue:
+          type: number
+        failed_request_fee:
+          type: number
+          nullable: true
+        userVirtualAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserVirtualAccount"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - name
+        - currencyCode
+        - metadata
+        - accountCreationFee
+        - minimumFundingFee
+        - inflowFeeType
+        - inflowFeeValue
+        - inflowFeeCap
+        - platformFeeValue
+        - failed_request_fee
+        - userVirtualAccounts
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    UserVirtualAccountDetails:
+      type: object
+      properties:
+        virtualAccount:
+          $ref: "#/components/schemas/UserVirtualAccount"
+        accountMetadata:
+          type: object
+        validated:
+          type: boolean
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - virtualAccount
+        - accountMetadata
+        - validated
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    UserVirtualAccount:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        currency:
+          $ref: "#/components/schemas/Currency"
+        virtualAccountProvider:
+          $ref: "#/components/schemas/VirtualAccountProvider"
+        status:
+          type: string
+          enum:
+            - requested
+            - pending
+            - active
+            - inactive
+            - freezing
+            - failed
+        account_id_from_provider:
+          type: string
+        activation_metadata:
+          type: object
+          nullable: true
+        userVirtualAccountDetails:
+          $ref: "#/components/schemas/UserVirtualAccountDetails"
+        tos_status:
+          type: boolean
+        kyc_status:
+          type: boolean
+        rejection_reason:
+          type: string
+          nullable: true
+        kyc_rejection_reasons:
+          type: object
+          properties:
+            reason:
+              type: string
+            developerReason:
+              type: string
+          required:
+            - reason
+            - developerReason
+        pending_issues:
+          nullable: true
+          type: array
+          items:
+            type: string
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - user
+        - currency
+        - virtualAccountProvider
+        - status
+        - account_id_from_provider
+        - activation_metadata
+        - userVirtualAccountDetails
+        - tos_status
+        - kyc_status
+        - rejection_reason
+        - kyc_rejection_reasons
+        - pending_issues
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    CryptoProvider:
+      type: object
+      properties:
+        name:
+          type: string
+        wallet_creation_fee:
+          type: number
+        inflow_fee_type:
+          type: object
+        inflow_fee_value:
+          type: number
+        inflow_fee_cap:
+          type: number
+          nullable: true
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - name
+        - wallet_creation_fee
+        - inflow_fee_type
+        - inflow_fee_value
+        - inflow_fee_cap
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    CryptoWallet:
+      type: object
+      properties:
+        user_id:
+          type: number
+        user:
+          $ref: "#/components/schemas/User"
+        provider_wallet_id:
+          type: string
+        address:
+          type: string
+        currency:
+          type: string
+        network:
+          type: object
+        status:
+          type: string
+          enum:
+            - active
+            - disabled
+        crypto_transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CryptoTransaction"
+        crypto_provider_id:
+          type: number
+        crypto_provider:
+          $ref: "#/components/schemas/CryptoProvider"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - user_id
+        - user
+        - provider_wallet_id
+        - address
+        - currency
+        - network
+        - status
+        - crypto_transactions
+        - crypto_provider_id
+        - crypto_provider
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    Wallet:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        balance:
+          type: number
+        reserveBalance:
+          type: number
+        user:
+          $ref: "#/components/schemas/User"
+        currency:
+          $ref: "#/components/schemas/Currency"
+        created:
+          format: date-time
+          type: string
+        updated:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+        crypto_transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CryptoTransaction"
+      required:
+        - id
+        - uuid
+        - balance
+        - reserveBalance
+        - user
+        - currency
+        - created
+        - updated
+        - crypto_transactions
+    CryptoTransaction:
+      type: object
+      properties:
+        user_id:
+          type: number
+        user:
+          $ref: "#/components/schemas/User"
+        crypto_wallet_id:
+          type: number
+        crypto_wallet:
+          $ref: "#/components/schemas/CryptoWallet"
+        network:
+          type: string
+        provider_reference:
+          type: string
+          nullable: true
+        currency:
+          type: string
+        total_amount:
+          type: string
+        provider_fee:
+          type: string
+        platform_fee:
+          type: string
+        total_fees:
+          type: string
+        amount:
+          type: string
+        fiat_wallet_id:
+          type: number
+          nullable: true
+        fiat_wallet:
+          $ref: "#/components/schemas/Wallet"
+        description:
+          type: string
+        status:
+          type: object
+        txHash:
+          type: string
+          nullable: true
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - user_id
+        - user
+        - crypto_wallet_id
+        - crypto_wallet
+        - network
+        - provider_reference
+        - currency
+        - total_amount
+        - provider_fee
+        - platform_fee
+        - total_fees
+        - amount
+        - fiat_wallet_id
+        - fiat_wallet
+        - status
+        - txHash
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        country:
+          type: string
+        password:
+          type: string
+        pin:
+          type: string
+        isPinSet:
+          type: boolean
+        emailOTP:
+          type: string
+        emailOTPExpiresAt:
+          format: date-time
+          type: string
+        phoneOTP:
+          type: string
+        phoneOTPExpiresAt:
+          format: date-time
+          type: string
+        hasCompletedFirstPayment:
+          type: boolean
+        hasCompletedKYC:
+          type: boolean
+        isActive:
+          type: boolean
+        isPhoneVerified:
+          type: boolean
+        isEmailVerified:
+          type: boolean
+        dob:
+          format: date-time
+          type: string
+        role:
+          type: string
+          enum:
+            - user
+            - admin
+        created:
+          format: date-time
+          type: string
+        updated:
+          format: date-time
+          type: string
+        novacrustBusinessCustomerId:
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+        referedBy:
+          type: string
+        channel:
+          type: string
+        zid:
+          type: string
+        zohoDeletedAt:
+          format: date-time
+          type: string
+          nullable: true
+        marketingOptOut:
+          type: boolean
+        metadata:
+          type: object
+        kycLevel:
+          type: number
+        isThirdPartyPaymentAllowed:
+          type: boolean
+        beneficiaries:
+          type: array
+          items:
+            $ref: "#/components/schemas/Beneficiary"
+        payouts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Payout"
+        userVirtualAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserVirtualAccount"
+        crypto_transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CryptoTransaction"
+        crypto_wallets:
+          type: array
+          items:
+            $ref: "#/components/schemas/CryptoWallet"
+        wallets:
+          type: array
+          items:
+            $ref: "#/components/schemas/Wallet"
+        is_ambassador:
+          type: boolean
+        isHighRisk:
+          type: boolean
+        reservePercentage:
+          type: number
+        isOtcCustomer:
+          type: boolean
+        otcPlatformPercentage:
+          type: number
+        intentions:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - uuid
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - country
+        - password
+        - pin
+        - isPinSet
+        - emailOTP
+        - emailOTPExpiresAt
+        - phoneOTP
+        - phoneOTPExpiresAt
+        - hasCompletedFirstPayment
+        - hasCompletedKYC
+        - isActive
+        - isPhoneVerified
+        - isEmailVerified
+        - role
+        - created
+        - updated
+        - novacrustBusinessCustomerId
+        - referedBy
+        - channel
+        - zid
+        - zohoDeletedAt
+        - marketingOptOut
+        - metadata
+        - kycLevel
+        - isThirdPartyPaymentAllowed
+        - beneficiaries
+        - payouts
+        - userVirtualAccounts
+        - crypto_transactions
+        - crypto_wallets
+        - wallets
+        - is_ambassador
+        - isHighRisk
+        - reservePercentage
+        - isOtcCustomer
+        - otcPlatformPercentage
+        - intentions
+    PayoutsProvider:
+      type: object
+      properties:
+        name:
+          type: string
+        metadata:
+          type: object
+        payouts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Payout"
+        payoutsMethods:
+          type: array
+          items:
+            $ref: "#/components/schemas/PayoutMethod"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - name
+        - metadata
+        - payouts
+        - payoutsMethods
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    Payout:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        beneficiary:
+          $ref: "#/components/schemas/Beneficiary"
+        payoutMethod:
+          $ref: "#/components/schemas/PayoutMethod"
+        amount:
+          type: number
+        currency:
+          $ref: "#/components/schemas/Currency"
+        providerReference:
+          type: string
+        transferReference:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+            - processing
+            - success
+            - fail
+            - manual_review
+        providerFee:
+          type: number
+        networkFee:
+          type: number
+        platformFee:
+          type: number
+        totalAmount:
+          type: number
+        metadata:
+          type: object
+          nullable: true
+        txHash:
+          type: string
+          nullable: true
+        revenueMetadata:
+          type: object
+          nullable: true
+        payoutsProvider:
+          $ref: "#/components/schemas/PayoutsProvider"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - user
+        - beneficiary
+        - payoutMethod
+        - amount
+        - currency
+        - providerReference
+        - transferReference
+        - description
+        - status
+        - providerFee
+        - networkFee
+        - platformFee
+        - totalAmount
+        - metadata
+        - txHash
+        - revenueMetadata
+        - payoutsProvider
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    PayoutMethod:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        businessPayoutMethodId:
+          type: string
+          nullable: true
+        providerPayoutMethodId:
+          type: string
+        countryCode:
+          type: string
+        currencyCode:
+          type: string
+          nullable: true
+        category:
+          type: string
+        payoutFeeType:
+          type: string
+          enum:
+            - flat
+            - percentage
+        payoutFeeCap:
+          type: number
+          nullable: true
+        payoutFeeValue:
+          type: number
+        platformFeeValue:
+          type: number
+        minPayoutPlatformFee:
+          type: number
+          nullable: true
+        metadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/PayoutMethodMetadata"
+        beneficiaries:
+          type: array
+          items:
+            $ref: "#/components/schemas/Beneficiary"
+        payouts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Payout"
+        payoutsProvider:
+          $ref: "#/components/schemas/PayoutsProvider"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - name
+        - description
+        - businessPayoutMethodId
+        - providerPayoutMethodId
+        - countryCode
+        - currencyCode
+        - category
+        - payoutFeeType
+        - payoutFeeCap
+        - payoutFeeValue
+        - platformFeeValue
+        - minPayoutPlatformFee
+        - metadata
+        - beneficiaries
+        - payouts
+        - payoutsProvider
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    Beneficiary:
+      type: object
+      properties:
+        name:
+          type: string
+        payoutMethod:
+          $ref: "#/components/schemas/PayoutMethod"
+        countryCode:
+          type: string
+        currency:
+          $ref: "#/components/schemas/Currency"
+        metadata:
+          type: object
+          nullable: true
+        user:
+          $ref: "#/components/schemas/User"
+        payouts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Payout"
+        id:
+          type: number
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - name
+        - payoutMethod
+        - countryCode
+        - currency
+        - metadata
+        - user
+        - payouts
+        - id
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    Currency:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        country:
+          type: string
+        symbol:
+          type: string
+        currencyCode:
+          type: string
+        countryCode:
+          type: string
+        buySpread:
+          type: number
+        sellSpread:
+          type: number
+        businessBuySpread:
+          type: number
+        businessSellSpread:
+          type: number
+        spreadType:
+          type: string
+          enum:
+            - FIXED
+            - PERCENTAGE
+        currencyClass:
+          type: string
+          enum:
+            - local
+            - global
+        isHub:
+          type: boolean
+        rateProviders:
+          type: array
+          items:
+            type: string
+            enum:
+              - quidax
+              - coinmarketcap
+              - brails
+              - cashramp
+        conversionFeePercentage:
+          type: number
+        businessConversionFeePercentage:
+          type: number
+        payoutEnabled:
+          type: boolean
+        collectionEnabled:
+          type: boolean
+        minFundingAmount:
+          type: number
+        minFundingPlatformFee:
+          type: number
+          nullable: true
+        businessMinFundingPlatformFee:
+          type: number
+          nullable: true
+        fundingPlatformFeeType:
+          type: object
+        fundingPlatformFeeValue:
+          type: number
+        businessFundingPlatformFeeType:
+          type: object
+        businessFundingPlatformFeeValue:
+          type: number
+        minPayoutPlatformFee:
+          type: number
+          nullable: true
+        businessMinPayoutPlatformFee:
+          type: number
+          nullable: true
+        canConvertTo:
+          type: array
+          items:
+            type: string
+        canConvertFrom:
+          type: array
+          items:
+            type: string
+        created:
+          format: date-time
+          type: string
+        updated:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+        wallets:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessWallet"
+        businessPayouts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessPayout"
+        businessPayoutMetadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessPayoutMethodMetadata"
+        customerVirtualAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCustomerVirtualAccount"
+        beneficiaries:
+          type: array
+          items:
+            $ref: "#/components/schemas/Beneficiary"
+        payouts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Payout"
+        payoutMetadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/PayoutMethodMetadata"
+        user_wallets:
+          type: array
+          items:
+            $ref: "#/components/schemas/Wallet"
+      required:
+        - id
+        - uuid
+        - country
+        - symbol
+        - currencyCode
+        - countryCode
+        - buySpread
+        - sellSpread
+        - businessBuySpread
+        - businessSellSpread
+        - spreadType
+        - currencyClass
+        - isHub
+        - rateProviders
+        - conversionFeePercentage
+        - businessConversionFeePercentage
+        - payoutEnabled
+        - collectionEnabled
+        - minFundingAmount
+        - minFundingPlatformFee
+        - businessMinFundingPlatformFee
+        - fundingPlatformFeeType
+        - fundingPlatformFeeValue
+        - businessFundingPlatformFeeType
+        - businessFundingPlatformFeeValue
+        - minPayoutPlatformFee
+        - businessMinPayoutPlatformFee
+        - canConvertTo
+        - canConvertFrom
+        - created
+        - updated
+        - wallets
+        - businessPayouts
+        - businessPayoutMetadata
+        - customerVirtualAccounts
+        - beneficiaries
+        - payouts
+        - payoutMetadata
+        - user_wallets
+    BusinessWallet:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        business:
+          $ref: "#/components/schemas/Business"
+        currency:
+          $ref: "#/components/schemas/Currency"
+        balance:
+          type: number
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+        virtualAccounts:
+          type: array
+          items:
+            type: object
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessWallet"
+      required:
+        - id
+        - uuid
+        - business
+        - currency
+        - balance
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - virtualAccounts
+        - transactions
+    BusinessSetting:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        business:
+          $ref: "#/components/schemas/Business"
+        webhookUrl:
+          type: string
+        webhookSecret:
+          type: string
+        is2FaViaEmailEnabled:
+          type: boolean
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - uuid
+        - business
+        - webhookUrl
+        - webhookSecret
+        - is2FaViaEmailEnabled
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessToken:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        business:
+          $ref: "#/components/schemas/Business"
+        name:
+          type: string
+        token:
+          type: string
+        isActive:
+          type: boolean
+        expiresAt:
+          format: date-time
+          type: string
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - uuid
+        - business
+        - name
+        - token
+        - isActive
+        - expiresAt
+        - createdAt
+        - updatedAt
+        - deletedAt
+    Business:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        country:
+          type: string
+        phoneNumber:
+          type: string
+        supportEmail:
+          type: string
+        logoUrl:
+          type: string
+        kycStatus:
+          type: string
+          enum:
+            - Not Submitted
+            - Pending
+            - Approved
+            - Rejected
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+        businessUserLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessUserLink"
+        kyc:
+          $ref: "#/components/schemas/Kyc"
+        wallets:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessWallet"
+        customers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Customer"
+        businessCustomerVirtualAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCustomerVirtualAccount"
+        settings:
+          $ref: "#/components/schemas/BusinessSetting"
+        token:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessToken"
+        businessBeneficiaries:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessBeneficiary"
+        businessPayouts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessPayout"
+        cashramp_customer_id:
+          type: string
+        businessCode:
+          type: number
+        referralCode:
+          type: string
+        customer_crypto_accounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessCustomerCryptoAccount"
+      required:
+        - id
+        - uuid
+        - name
+        - email
+        - username
+        - country
+        - phoneNumber
+        - supportEmail
+        - logoUrl
+        - kycStatus
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - businessUserLinks
+        - kyc
+        - wallets
+        - customers
+        - businessCustomerVirtualAccounts
+        - settings
+        - token
+        - businessBeneficiaries
+        - businessPayouts
+        - cashramp_customer_id
+        - businessCode
+        - referralCode
+        - customer_crypto_accounts
+    BusinessFxTrade:
+      type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessWalletTransaction"
+        id:
+          type: number
+        sourceWallet:
+          $ref: "#/components/schemas/BusinessWallet"
+        destinationWallet:
+          $ref: "#/components/schemas/BusinessWallet"
+        sourceCurrency:
+          $ref: "#/components/schemas/Currency"
+        sourceCurrencyId:
+          type: number
+        destinationCurrency:
+          $ref: "#/components/schemas/Currency"
+        destinationCurrencyId:
+          type: number
+        sourceAmount:
+          type: number
+        destinationAmount:
+          type: number
+        platformFee:
+          type: number
+        providerExchangeRate:
+          type: number
+        novacrustExchangeRate:
+          type: number
+        transactionSpread:
+          type: number
+        revenueMetadata:
+          type: object
+          nullable: true
+        sourceBalanceBefore:
+          type: number
+        sourceBalanceAfter:
+          type: number
+        destinationBalanceBefore:
+          type: number
+        destinationBalanceAfter:
+          type: number
+        reference:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+            - PENDING
+            - SUCCESS
+            - FAILED
+            - CLOSE
+            - MANUAL_REVIEW
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - transactions
+        - id
+        - sourceWallet
+        - destinationWallet
+        - sourceCurrency
+        - sourceCurrencyId
+        - destinationCurrency
+        - destinationCurrencyId
+        - sourceAmount
+        - destinationAmount
+        - platformFee
+        - providerExchangeRate
+        - novacrustExchangeRate
+        - transactionSpread
+        - revenueMetadata
+        - sourceBalanceBefore
+        - sourceBalanceAfter
+        - destinationBalanceBefore
+        - destinationBalanceAfter
+        - reference
+        - description
+        - status
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessWalletTransaction:
+      type: object
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        wallet:
+          $ref: "#/components/schemas/BusinessWallet"
+        type:
+          type: string
+          enum:
+            - CREDIT
+            - DEBIT
+        serviceType:
+          type: string
+          enum:
+            - wallet_funding
+            - payout_withdrawal
+            - balance_update
+            - exchange
+            - card_funding
+            - card_withdrawal
+            - card_creation
+            - usd_account_creation
+            - platform_fee
+            - purchase
+            - monthly_card_maintenance
+            - fund_card
+            - refund
+            - gift_card_purchase
+            - gift_card_sale
+            - authorization_code
+            - business_collection
+        paymentGateway:
+          type: string
+          enum:
+            - PAYSTACK
+            - INTERNAL
+            - KORAPAY
+            - STARTBUTTON
+            - BLOCKRADAR
+            - SAFEHAVEN
+            - CASHRAMP
+            - SEPTLY
+            - BRAILS
+        paymentGatewayReference:
+          type: string
+        amount:
+          type: number
+        platformFee:
+          type: number
+        revenueMetadata:
+          type: object
+          nullable: true
+        paymentGatewayFee:
+          type: number
+        totalAmount:
+          type: number
+        totalFees:
+          type: number
+        balanceBefore:
+          type: number
+        balanceAfter:
+          type: number
+        providerExchangeRate:
+          type: number
+        novacrustExchangeRate:
+          type: number
+        transactionSpread:
+          type: number
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+            - PENDING
+            - SUCCESS
+            - FAILED
+            - CLOSE
+            - MANUAL_REVIEW
+        reference:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+        paymentLink:
+          $ref: "#/components/schemas/BusinessPaymentLink"
+        paymentLinkId:
+          type: number
+        businessFxTrade:
+          $ref: "#/components/schemas/BusinessFxTrade"
+        businessFxTradeId:
+          type: number
+        metadata:
+          type: object
+      required:
+        - id
+        - uuid
+        - wallet
+        - type
+        - serviceType
+        - paymentGateway
+        - paymentGatewayReference
+        - amount
+        - platformFee
+        - revenueMetadata
+        - paymentGatewayFee
+        - totalAmount
+        - totalFees
+        - balanceBefore
+        - balanceAfter
+        - providerExchangeRate
+        - novacrustExchangeRate
+        - transactionSpread
+        - description
+        - status
+        - reference
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - paymentLink
+        - paymentLinkId
+        - businessFxTrade
+        - businessFxTradeId
+        - metadata
+    BusinessPaymentLink:
+      type: object
+      properties:
+        id:
+          type: number
+        business:
+          $ref: "#/components/schemas/Business"
+        name:
+          type: string
+        slug:
+          type: string
+        url:
+          type: string
+        redirectUrl:
+          type: string
+          nullable: true
+        isDefault:
+          type: boolean
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+        settlementCurrency:
+          type: string
+        settlementAmount:
+          type: number
+        isAmountFixed:
+          type: boolean
+        description:
+          type: string
+        customerMetadata:
+          type: object
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessWalletTransaction"
+        uuid:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+      required:
+        - id
+        - business
+        - name
+        - slug
+        - url
+        - redirectUrl
+        - isDefault
+        - status
+        - settlementCurrency
+        - settlementAmount
+        - isAmountFixed
+        - description
+        - customerMetadata
+        - transactions
+        - uuid
+        - createdAt
+        - updatedAt
+        - deletedAt
+    BusinessWalletTransactionResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+        type:
+          enum:
+            - CREDIT
+            - DEBIT
+          type: string
+        serviceType:
+          enum:
+            - wallet_funding
+            - payout_withdrawal
+            - balance_update
+            - exchange
+            - card_funding
+            - card_withdrawal
+            - card_creation
+            - usd_account_creation
+            - platform_fee
+            - purchase
+            - monthly_card_maintenance
+            - fund_card
+            - refund
+            - gift_card_purchase
+            - gift_card_sale
+            - authorization_code
+            - business_collection
+          type: string
+        paymentGateway:
+          enum:
+            - PAYSTACK
+            - INTERNAL
+            - KORAPAY
+            - STARTBUTTON
+            - BLOCKRADAR
+            - SAFEHAVEN
+            - CASHRAMP
+            - SEPTLY
+            - BRAILS
+          type: string
+        paymentGatewayReference:
+          type: string
+        amount:
+          type: number
+        platformFee:
+          type: number
+        revenueMetadata:
+          type: object
+          nullable: true
+        paymentGatewayFee:
+          type: number
+        totalAmount:
+          type: number
+        totalFees:
+          type: number
+        balanceBefore:
+          type: number
+        balanceAfter:
+          type: number
+        providerExchangeRate:
+          type: number
+        novacrustExchangeRate:
+          type: number
+        transactionSpread:
+          type: number
+        description:
+          type: string
+        status:
+          enum:
+            - PENDING
+            - SUCCESS
+            - FAILED
+            - CLOSE
+            - MANUAL_REVIEW
+          type: string
+        reference:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        deletedAt:
+          format: date-time
+          type: string
+          nullable: true
+        paymentLink:
+          $ref: "#/components/schemas/BusinessPaymentLink"
+        paymentLinkId:
+          type: number
+        businessFxTrade:
+          $ref: "#/components/schemas/BusinessFxTrade"
+        businessFxTradeId:
+          type: number
+        metadata:
+          type: object
+      required:
+        - uuid
+        - type
+        - serviceType
+        - paymentGateway
+        - paymentGatewayReference
+        - amount
+        - platformFee
+        - revenueMetadata
+        - paymentGatewayFee
+        - totalAmount
+        - totalFees
+        - balanceBefore
+        - balanceAfter
+        - providerExchangeRate
+        - novacrustExchangeRate
+        - transactionSpread
+        - description
+        - status
+        - reference
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - paymentLink
+        - paymentLinkId
+        - businessFxTrade
+        - businessFxTradeId
+        - metadata
+    GiftCardCountryDTO:
+      type: object
+      properties:
+        countryCode:
+          type: string
+          example: US
+        countryName:
+          type: string
+          example: United States
+      required:
+        - countryCode
+        - countryName
+    GetGiftCardCountriesResponseDTO:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Countries retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/GiftCardCountryDTO"
+      required:
+        - message
+        - data
+    GiftCardCategoryDTO:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Entertainment
+      required:
+        - name
+    GetGiftCardCategoriesResponseDTO:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Categories retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/GiftCardCategoryDTO"
+      required:
+        - message
+        - data
+    GiftCardProductDTO:
+      type: object
+      properties:
+        uuid:
+          type: string
+        productName:
+          type: string
+        denominationType:
+          type: string
+        recipientCurrencyCode:
+          type: string
+        senderCurrencyCode:
+          type: string
+        fixedRecipientDenominations:
+          type: array
+          items:
+            type: number
+        minRecipientDenomination:
+          type: number
+        maxRecipientDenomination:
+          type: number
+        brand:
+          type: string
+        redeemInstruction:
+          type: string
+      required:
+        - uuid
+        - productName
+        - denominationType
+        - recipientCurrencyCode
+        - senderCurrencyCode
+        - brand
+        - redeemInstruction
+    PaginationMetaDTO:
+      type: object
+      properties:
+        page:
+          type: number
+        limit:
+          type: number
+        total:
+          type: number
+        totalPages:
+          type: number
+        hasNext:
+          type: boolean
+        hasPrevious:
+          type: boolean
+      required:
+        - page
+        - limit
+        - total
+        - totalPages
+        - hasNext
+        - hasPrevious
+    GetGiftCardProductsResponseDTO:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Products retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/GiftCardProductDTO"
+        pagination:
+          $ref: "#/components/schemas/PaginationMetaDTO"
+      required:
+        - message
+        - data
+        - pagination
+    OpenApiPurchaseGiftCardDto:
+      type: object
+      properties:
+        product_id:
+          type: string
+          description: Product uuid
+        amount:
+          type: number
+          description: Amount
+          example: 50
+        quantity:
+          type: number
+          description: Quantity
+          example: 1
+        recipient_email:
+          type: string
+          description: Recipient email
+          example: johndoe@example.com
+        from_name:
+          type: string
+          description: From name
+          example: John Doe
+        recipient_phone_number:
+          type: string
+          description: Recipient phone number
+          example: "+2348062964137"
+        agree_to_terms:
+          type: boolean
+          description: Agree to terms and conditions
+          example: true
+      required:
+        - product_id
+        - amount
+        - quantity
+        - recipient_email
+        - agree_to_terms
+    GiftCardRedemptionCodeDTO:
+      type: object
+      properties:
+        cardNumber:
+          type: string
+        pinCode:
+          type: string
+          nullable: true
+        redemptionUrl:
+          type: string
+          nullable: true
+      required:
+        - cardNumber
+    GiftCardOrderDetailDTO:
+      type: object
+      properties:
+        uuid:
+          type: string
+        amount:
+          type: number
+        quantity:
+          type: number
+        totalAmount:
+          type: number
+        totalFee:
+          type: number
+        platformFee:
+          type: number
+        providerFee:
+          type: number
+        currencyCode:
+          type: string
+        recipientEmail:
+          type: string
+        reference:
+          type: string
+        status:
+          type: string
+        providerTransactionId:
+          type: string
+          nullable: true
+        productName:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        redemptionCodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/GiftCardRedemptionCodeDTO"
+      required:
+        - uuid
+        - amount
+        - quantity
+        - totalAmount
+        - totalFee
+        - platformFee
+        - providerFee
+        - currencyCode
+        - recipientEmail
+        - reference
+        - status
+        - productName
+        - createdAt
+        - redemptionCodes
+    PurchaseGiftCardResponseDTO:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Gift card purchased successfully
+        status:
+          type: boolean
+          example: true
+        data:
+          $ref: "#/components/schemas/GiftCardOrderDetailDTO"
+      required:
+        - message
+        - status
+        - data
+    GiftCardOrderDTO:
+      type: object
+      properties:
+        uuid:
+          type: string
+        amount:
+          type: number
+        quantity:
+          type: number
+        totalAmount:
+          type: number
+        totalFee:
+          type: number
+        platformFee:
+          type: number
+        providerFee:
+          type: number
+        currencyCode:
+          type: string
+        recipientEmail:
+          type: string
+        reference:
+          type: string
+        status:
+          type: string
+        providerTransactionId:
+          type: string
+          nullable: true
+        productName:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+      required:
+        - uuid
+        - amount
+        - quantity
+        - totalAmount
+        - totalFee
+        - platformFee
+        - providerFee
+        - currencyCode
+        - recipientEmail
+        - reference
+        - status
+        - productName
+        - createdAt
+    GetGiftCardOrdersResponseDTO:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Orders retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/GiftCardOrderDTO"
+        pagination:
+          $ref: "#/components/schemas/PaginationMetaDTO"
+      required:
+        - message
+        - data
+        - pagination
+    GetGiftCardOrderResponseDTO:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Order retrieved successfully
+        data:
+          $ref: "#/components/schemas/GiftCardOrderDetailDTO"
+      required:
+        - message
+        - data
+    OpenApiSellCategoryResponseDto:
+      type: object
+      properties:
+        id:
+          type: object
+          example: 1
+        name:
+          type: string
+          example: Amazon
+        image:
+          type: string
+          example: https://example.com/amazon.png
+      required:
+        - id
+        - name
+    OpenApiSellProductResponseDto:
+      type: object
+      properties:
+        id:
+          type: object
+          example: 1
+        name:
+          type: string
+          example: Amazon USD
+        image:
+          type: string
+          example: https://example.com/amazon.png
+        rate:
+          type: number
+          example: 1200
+        minimum:
+          type: number
+          example: 10
+        form:
+          type: string
+          nullable: true
+          example: PHYSICAL
+        country:
+          type: string
+          nullable: true
+          example: USA
+        terms:
+          type: string
+          example: Terms and conditions...
+      required:
+        - id
+        - name
+    OpenApiSellRateAndFeeResponseDto:
+      type: object
+      properties:
+        platformFeeAmount:
+          type: string
+          example: "5.0000"
+        payoutAmount:
+          type: string
+          example: "995.0000"
+        platformRate:
+          type: number
+          example: 1200
+        payoutCurrency:
+          type: string
+          example: NGN
+      required:
+        - platformFeeAmount
+        - payoutAmount
+        - platformRate
+        - payoutCurrency
+    OpenApiSellOrderResponseDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: uuid-123
+        amount:
+          type: number
+          example: 100
+        payoutAmount:
+          type: number
+          example: 120000
+        sellCurrency:
+          type: string
+          example: NAIRA
+        sellValue:
+          type: number
+          example: 120000
+        payoutCurrency:
+          type: string
+          example: NGN
+        status:
+          type: string
+          example: SUCCESS
+        reference:
+          type: string
+          example: ref-123
+        providerRate:
+          type: number
+          example: 1200
+        platformFeeAmount:
+          type: number
+          example: 500
+        platformRate:
+          type: number
+          example: 1200
+        commissionAmount:
+          type: number
+          example: 0
+        totalAmount:
+          type: number
+          example: 120500
+        totalPayout:
+          type: number
+          example: 120500
+        imageUrls:
+          example:
+            - https://example.com/image.png
+          type: array
+          items:
+            type: string
+        createdAt:
+          format: date-time
+          type: string
+          example: 2024-04-24T10:00:00Z
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2024-04-24T10:00:00Z
+      required:
+        - uuid
+        - amount
+        - payoutAmount
+        - sellCurrency
+        - sellValue
+        - payoutCurrency
+        - status
+        - reference
+        - providerRate
+        - platformFeeAmount
+        - platformRate
+        - commissionAmount
+        - totalAmount
+        - totalPayout
+        - createdAt
+        - updatedAt
+    OpenApiPaginationDto:
+      type: object
+      properties:
+        total:
+          type: number
+          example: 100
+        page:
+          type: number
+          example: 1
+        limit:
+          type: number
+          example: 10
+        totalPages:
+          type: number
+          example: 10
+      required:
+        - total
+        - page
+        - limit
+        - totalPages
+    OpenApiSellOrdersResponseDto:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Orders retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/OpenApiSellOrderResponseDto"
+        pagination:
+          $ref: "#/components/schemas/OpenApiPaginationDto"
+      required:
+        - message
+        - data
+        - pagination
+    OpenApiSellGiftCardDto:
+      type: object
+      properties:
+        categoryId:
+          type: number
+          description: Category ID
+          example: 1
+        subCategoryId:
+          type: number
+          description: Subcategory ID/Giftcard ID
+          example: 1
+        amount:
+          type: number
+          description: Amount
+          example: 100
+        type:
+          enum:
+            - physical
+            - e-code
+          type: string
+          description: Gift card type
+          example: physical
+        attachments:
+          type: array
+          description: Card images (attachments). Compulsory for physical cards.
+          items:
+            type: string
+            format: binary
+        payout_currency:
+          type: string
+          description: Payout currency
+          example: ngn
+        e_code:
+          type: string
+          description: Compulsory for e-codes (pass code here).
+      required:
+        - categoryId
+        - subCategoryId
+        - amount
+        - type
+    OpenApiSellInitiatedResponseDto:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Gift card sell order initiated successfully
+        orderUuid:
+          type: string
+          example: uuid-123
+      required:
+        - message
+        - orderUuid
+security:
+  - api-key: []

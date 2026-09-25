@@ -1,0 +1,390 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "palm",
+  "name": "Novacrust API Documentation",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "favicon": {
+    "light": "/images/novacrust1.png",
+    "dark": "/images/novacrust1.png"
+  },
+  "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Documentation",
+          "href": "https://dev-docs.novacrust.com",
+          "icon": "book-open-cover"
+        },
+        {
+          "anchor": "Blog",
+          "href": "https://novacrust.com/blog",
+          "icon": "newspaper"
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "tab": "Guides",
+        "icon": "book",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "authentication",
+              "error-codes",
+              "api-structure"
+            ]
+          },
+          {
+            "group": "Collection",
+            "pages": []
+          },
+          {
+            "group": "Payout",
+            "pages": [
+              "payout-overview",
+              "payout-pricing"
+            ]
+          },
+          {
+            "group": "Webhook",
+            "pages": [
+              {
+                "group": "Payout Webhook",
+                "pages": [
+                  "payout-webhook-examples"
+                ]
+              },
+              {
+                "group": "Gift Card Webhook",
+                "pages": [
+                  "gift-card-webhook-examples"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Misc",
+            "pages": [
+              "kyc-requirements-by-country"
+            ]
+          },
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "error-codes",
+              "api-structure",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "webhook-overview",
+              "webhook-verification",
+              {
+                "group": "Payout Webhook",
+                "pages": [
+                  "payout-webhook-examples"
+                ]
+              },
+              {
+                "group": "Gift Card Webhook",
+                "pages": [
+                  "gift-card-webhook-examples"
+                ]
+              },
+              {
+                "group": "Collection Webhook",
+                "pages": [
+                  "untitled-page-18",
+                  "untitled-page-19",
+                  "untitled-page-20",
+                  "untitled-page-21",
+                  "untitled-page-22"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Payout",
+            "pages": [
+              "payout-overview",
+              "payout-pricing"
+            ]
+          },
+          {
+            "group": "Collection",
+            "pages": [
+              "collection-overview"
+            ]
+          },
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "error-codes",
+              "api-structure",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "webhook-overview",
+              "webhook-verification",
+              {
+                "group": "Payout Webhook",
+                "pages": [
+                  "payout-webhook-examples"
+                ]
+              },
+              {
+                "group": "Gift Card Webhook",
+                "pages": [
+                  "gift-card-webhook-examples"
+                ]
+              },
+              {
+                "group": "Collection Webhook",
+                "pages": [
+                  "untitled-page-18",
+                  "untitled-page-19",
+                  "untitled-page-20",
+                  "untitled-page-21",
+                  "untitled-page-22"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "error-codes",
+              "api-structure",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "webhook-overview",
+              "webhook-verification",
+              {
+                "group": "Payout Webhook",
+                "pages": [
+                  "payout-webhook-examples"
+                ]
+              },
+              {
+                "group": "Gift Card Webhook",
+                "pages": [
+                  "gift-card-webhook-examples"
+                ]
+              },
+              {
+                "group": "Collection Webhook",
+                "pages": [
+                  "untitled-page-19",
+                  "untitled-page-20",
+                  "untitled-page-21",
+                  "untitled-page-22"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Payouts",
+            "pages": [
+              "payout-overview",
+              "payout-pricing"
+            ]
+          },
+          {
+            "group": "Collection",
+            "pages": [
+              "collection-overview"
+            ]
+          },
+          {
+            "group": "Misc",
+            "pages": [
+              "kyc-requirements-by-country"
+            ]
+          },
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "error-codes",
+              "api-structure",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "webhook-overview",
+              "webhook-verification",
+              {
+                "group": "Payout Webhook",
+                "pages": [
+                  "payout-webhook-examples"
+                ]
+              },
+              {
+                "group": "Gift Card Webhook",
+                "pages": [
+                  "gift-card-webhook-examples"
+                ]
+              },
+              {
+                "group": "Collection Webhook",
+                "pages": [
+                  "untitled-page-19",
+                  "untitled-page-20",
+                  "untitled-page-21",
+                  "untitled-page-22"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Payouts",
+            "pages": [
+              "payout-overview",
+              "payout-pricing"
+            ]
+          },
+          {
+            "group": "Collection",
+            "pages": [
+              "collection-overview"
+            ]
+          },
+          {
+            "group": "Misc",
+            "pages": [
+              "kyc-requirements-by-country"
+            ]
+          },
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "error-codes",
+              "api-structure",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "webhook-overview",
+              "webhook-verification",
+              {
+                "group": "Payout Webhook",
+                "pages": [
+                  "payout-webhook-examples"
+                ]
+              },
+              {
+                "group": "Gift Card Webhook",
+                "pages": [
+                  "gift-card-webhook-examples"
+                ]
+              },
+              {
+                "group": "Collection Webhook",
+                "pages": [
+                  "",
+                  "untitled-page-19",
+                  "untitled-page-20",
+                  "untitled-page-21",
+                  "untitled-page-22"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Payouts",
+            "pages": [
+              "payout-overview",
+              "payout-pricing"
+            ]
+          },
+          {
+            "group": "Collection",
+            "pages": [
+              "collection-overview"
+            ]
+          },
+          {
+            "group": "Misc",
+            "pages": [
+              "kyc-requirements-by-country"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "icon": "code",
+        "groups": [
+          {
+            "group": "Core Endpoints",
+            "openapi": "novacrust-open-api-v2.yaml"
+          }
+        ]
+      }
+    ]
+  },
+  "logo": {
+    "light": "/images/NCGreenTransBG.png",
+    "dark": "/images/NCWhiteTransBG.png",
+    "href": "https://novacrust.com"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:support@novacrust.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://merchant.novacrust.com"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/mynovacrust",
+      "github": "https://github.com/novacrust",
+      "linkedin": "https://linkedin.com/company/novacrust"
+    }
+  },
+  "api": {
+    "openapi": "novacrust-open-api-v2.yaml"
+  },
+  "description": "Novacrust Official API documentation for integrating Collection, Payout, Crypto and Gift card services into your platform."
+}

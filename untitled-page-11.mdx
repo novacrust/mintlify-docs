@@ -1,0 +1,29 @@
+---
+title: "Card debit declined event"
+---
+
+```json
+{
+    "eventType": "CARD_DEBIT_DECLINED",
+    "cardId": "card004",
+    "amount": 500,
+    "balance": 1000,
+    "currency": "USD",
+    "transaction_reference": "tx001-uuid",
+    "transaction_type": "DEBIT",
+    "transaction_date": "2025-03-05T12:00:00Z",
+    "timestamp": "6440664122",
+    "status": "DECLINED",
+    "description": "GOOGLE *Google One 650-253-0000",
+    "reason": "Card debit declined due to negative balance",
+    "merchant_data": {
+        "merchant": "Google One", 
+        "merchant_category_code": "34345 or N/A "
+    },
+    "foreign_transaction":{
+        "amount": 150,
+        "currency": "GBP",
+        "foreign_transaction_fee": 10
+    }
+}
+```
