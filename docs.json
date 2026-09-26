@@ -34,8 +34,30 @@
           {
             "group": "Get Started",
             "pages": [
+              "introduction",
               "api-structure",
+              "error-codes",
               "authentication"
+            ]
+          },
+          {
+            "group": "Payouts",
+            "pages": [
+              "payout-overview",
+              "payout-pricing"
+            ]
+          },
+          {
+            "group": "Collections",
+            "pages": [
+              "collection-overview"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "webhook-overview",
+              "webhook-verification"
             ]
           }
         ]
