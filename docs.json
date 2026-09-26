@@ -30,7 +30,15 @@
       {
         "group": "Guides",
         "icon": "book",
-        "pages": []
+        "pages": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "api-structure",
+              "authentication"
+            ]
+          }
+        ]
       },
       {
         "group": "API Reference",
