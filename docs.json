@@ -57,7 +57,25 @@
             "group": "Webhooks",
             "pages": [
               "webhook-overview",
-              "webhook-verification"
+              "webhook-verification",
+              {
+                "group": "Payout Webhooks",
+                "pages": [
+                  "payout-webhook-examples"
+                ]
+              },
+              {
+                "group": "Gift Card Webhooks",
+                "pages": [
+                  "gift-card-webhook-examples"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Misc",
+            "pages": [
+              "kyc-requirements-by-country"
             ]
           }
         ]
