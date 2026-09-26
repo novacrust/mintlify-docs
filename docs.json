@@ -26,11 +26,11 @@
         }
       ]
     },
-    "groups": [
+    "tabs": [
       {
-        "group": "Guides",
+        "tab": "Guides",
         "icon": "book",
-        "pages": [
+        "groups": [
           {
             "group": "Get Started",
             "pages": [
@@ -41,9 +41,9 @@
         ]
       },
       {
-        "group": "API Reference",
+        "tab": "API Reference",
         "icon": "code",
-        "pages": [
+        "groups": [
           {
             "group": "Core Endpoints",
             "openapi": "novacrust-open-api-v2.yaml"
