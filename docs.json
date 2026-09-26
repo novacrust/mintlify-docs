@@ -69,6 +69,13 @@
                 "pages": [
                   "gift-card-webhook-examples"
                 ]
+              },
+              {
+                "group": "Collection Webhook",
+                "pages": [
+                  "untitled-page-21",
+                  "untitled-page-19"
+                ]
               }
             ]
           },
